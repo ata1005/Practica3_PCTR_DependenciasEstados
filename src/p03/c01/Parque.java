@@ -19,7 +19,6 @@ public class Parque implements IParque{
 		this.maximoPersonas=maximoPersonas;
 	}
 
-
 	@Override
 	public synchronized void entrarAlParque(String puerta){		
 		
@@ -65,9 +64,6 @@ public class Parque implements IParque{
 		
 	}
 	
-	
-	
-	
 	private void imprimirInfo (String puerta, String movimiento){
 		System.out.println(movimiento + " por puerta " + puerta);
 		System.out.println("--> Personas en el parque " + contadorPersonasTotales); //+ " tiempo medio de estancia: "  + tmedio);
@@ -95,7 +91,7 @@ public class Parque implements IParque{
 		
 	}
 
-	protected void comprobarAntesDeEntrar(){	// TODO
+	protected void comprobarAntesDeEntrar(){	
 		while (contadorPersonasTotales == maximoPersonas) {
 			try {
 				wait();
@@ -107,7 +103,7 @@ public class Parque implements IParque{
 		}
 	}
 
-	protected void comprobarAntesDeSalir(){		// TODO
+	protected void comprobarAntesDeSalir(){	
 		while (contadorPersonasTotales == 0) {
 			try {
 				wait();

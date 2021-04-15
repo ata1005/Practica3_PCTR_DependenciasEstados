@@ -23,9 +23,6 @@ public class ActividadSalidaPuerta implements Runnable{
 		
 		for(int i = 0; i < NUMENTRADAS; i++) {
 			for(int j = 0; j < 10000; j++) {
-				
-				
-			
 				try {
 					this.parque.salirDelParque(puerta);
 					Thread.sleep(new Random().nextInt(5)*1000);
