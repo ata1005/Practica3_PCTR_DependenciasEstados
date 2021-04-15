@@ -2,31 +2,33 @@ package src.p03.c01;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Parque implements IParque{
 
-	// TODO 
+	private int maximoPersonas; 
 	private int contadorPersonasTotales;
 	private Hashtable<String, Integer> contadoresPersonasPuerta;
 	
 	
-	public Parque() {	// TODO
+	public Parque(int maximoPersonas) {	
 		contadorPersonasTotales = 0;
 		contadoresPersonasPuerta = new Hashtable<String, Integer>();
-		// TODO
+		this.maximoPersonas=maximoPersonas;
 	}
 
 
 	@Override
-	public void entrarAlParque(String puerta){		// TODO
+	public synchronized void entrarAlParque(String puerta){		
 		
 		// Si no hay entradas por esa puerta, inicializamos
 		if (contadoresPersonasPuerta.get(puerta) == null){
 			contadoresPersonasPuerta.put(puerta, 0);
 		}
 		
-		// TODO
-				
+		comprobarAntesDeEntrar();				
 		
 		// Aumentamos el contador total y el individual
 		contadorPersonasTotales++;		
@@ -35,22 +37,35 @@ public class Parque implements IParque{
 		// Imprimimos el estado del parque
 		imprimirInfo(puerta, "Entrada");
 		
-		// TODO
+		checkInvariante();		
 		
+		notifyAll();		
+	}
+	
+	public synchronized void salirDelParque(String puerta) {
 		
-		// TODO
+		// Si no hay entradas por esa puerta, inicializamos
+		if (contadoresPersonasPuerta.get(puerta) == null){
+			contadoresPersonasPuerta.put(puerta, 0);
+		}
+		
+		comprobarAntesDeSalir();				
+		
+		// Disminuimos el contador total y el individual
+		contadorPersonasTotales--;		
+		contadoresPersonasPuerta.put(puerta, contadoresPersonasPuerta.get(puerta)-1);
+		
+		// Imprimimos el estado del parque
+		imprimirInfo(puerta, "Salida");
+		
+		checkInvariante();		
+		
+		notifyAll();			
+		
 		
 	}
 	
-	public void salirDelParque(String puerta) {
-		
-		
-		
-	}
 	
-	// 
-	// TODO Método salirDelParque
-	//
 	
 	
 	private void imprimirInfo (String puerta, String movimiento){
@@ -75,20 +90,33 @@ public class Parque implements IParque{
 	
 	protected void checkInvariante() {
 		assert sumarContadoresPuerta() == contadorPersonasTotales : "INV: La suma de contadores de las puertas debe ser igual al valor del contador del parte";
-		// TODO 
-		// TODO
+		assert contadorPersonasTotales <= maximoPersonas:"INV: El numero de personas totales es mayor que el maximo.";
+		assert contadorPersonasTotales >= 0: "INV: El numero de personas totales es negativo.";
+		
 	}
 
 	protected void comprobarAntesDeEntrar(){	// TODO
-		//
-		// TODO
-		//
+		while (contadorPersonasTotales == maximoPersonas) {
+			try {
+				wait();
+			}catch(InterruptedException e){
+				Logger.getGlobal().log(Level.INFO, "Entrada interrumpida");
+				Logger.getGlobal().log(Level.INFO, e.toString());
+				return;
+			}
+		}
 	}
 
 	protected void comprobarAntesDeSalir(){		// TODO
-		//
-		// TODO
-		//
+		while (contadorPersonasTotales == 0) {
+			try {
+				wait();
+			}catch(InterruptedException e){
+				Logger.getGlobal().log(Level.INFO, "Salida interrumpida");
+				Logger.getGlobal().log(Level.INFO, e.toString());
+				return;
+			}
+		}
 	}
 
 
